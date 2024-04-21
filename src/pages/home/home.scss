@@ -1,0 +1,48 @@
+@import '../../sass/variables.scss';
+
+.d-flex {
+  display: flex;
+}
+.align-items {
+  align-items: center;
+}
+.justify-content {
+  justify-content: center;
+}
+.d-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+#home-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $gap-3;
+  .weather-data-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $gap-1;
+    border: 4px solid $secondary-color;
+    border-radius: 1rem;
+    .weather-data-forecast {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: $gap-1;
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .right-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
