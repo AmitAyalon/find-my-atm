@@ -3,10 +3,19 @@ import { observer } from 'mobx-react-lite';
 import rootStore from '../../store/root-store';
 import { useEffect } from 'react';
 import NoLocation from '../../components/no-location/no-location';
-import { toJS } from 'mobx';
+import Map from '../../components/map/map';
+import FilterPanel from '../../components/filter-panel/filter-panel';
 
 const HomePage = observer(() => {
   const { atmStore } = rootStore;
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      await atmStore.getAtmData();
+    };
+
+    fetchInitialData();
+  }, []);
 
   useEffect(() => {
     const getUserLocation = () => {
@@ -28,25 +37,19 @@ const HomePage = observer(() => {
     getUserLocation();
   }, []);
 
-  useEffect(() => {
-    const fetchAtmData = async () => {
-      await atmStore.getAtmData(5);
-    };
-
-    fetchAtmData();
-  }, []);
-
-  useEffect(() => {
-    console.log('ATM Data:', toJS(atmStore.atmData));
-  }, [atmStore.atmData]);
-
   return (
     <div id="home-page">
       {!atmStore.isUserLocationEmpty() ? (
         <div className="weather-data-container">
           <div className="weather-data-forecast">
-            <div className="left-panel">Hello World</div>
-            <div className="right-panel">Hey little Mama</div>
+            <div className="left-panel">
+              {atmStore.governmentData && atmStore.governmentData.result ? (
+                <Map />
+              ) : null}
+            </div>
+            <div className="right-panel">
+              <FilterPanel />
+            </div>
           </div>
         </div>
       ) : (
