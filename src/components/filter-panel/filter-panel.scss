@@ -1,0 +1,78 @@
+@import '../../sass/variables.scss';
+
+#filter-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    .atm-filters {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: $gap-default;
+        .search-bar {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+        }
+        .select-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem; 
+            label {
+                font-size: 14px;
+                font-weight: 600;
+            }       
+        }
+    }
+    .atm-list {
+        width: 100%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: right;
+        :active {
+            background-color: #eeeeee;
+        }
+        .atm-item {
+            padding: 1rem;
+            border: 1px solid #ccc;
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            cursor: pointer;
+            &.active {
+                background-color: red;
+            }
+            .item-container {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: $gap-default;
+                .item-content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    justify-content: center;
+                    gap: 0.25rem;
+                    font-family: 'Roboto', sans-serif;
+                    .item-title {
+                        font-size: 14px;
+                        font-weight: 600;
+                    }
+                    .item-address {
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #9399a2ff;
+                    }
+                }
+                img {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+    }
+}

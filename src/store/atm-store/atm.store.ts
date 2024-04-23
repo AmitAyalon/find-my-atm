@@ -1,9 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { AtmApi } from './atm.api';
-import { IAtmRecord, IGovernmentData } from './atm.interface';
+import { IAtmRecord, IGovernmentData, atmType, bankCode } from './atm.interface';
 import { IRestApiResonse } from '../../services/rest-api.interface';
 
-const BANK_CODE_LIST = [
+export const BANK_CODE_LIST = [
   { code: 11, name: 'בנק דיסקונט' },
   { code: 12, name: 'בנק הפועלים' },
   { code: 13, name: 'בנק אגוד' },
@@ -23,11 +23,18 @@ class AtmStore {
 
   governmentData: IGovernmentData = {} as IGovernmentData;
   atmData: IAtmRecord[] = [];
+
+  selectedAtmType: atmType = 'all';
+  selectedBankCode: bankCode = 'all';
+  selectedInput: string = '';
+
   geoMarkers: { geocode: [number, number]; popUp: string }[] = [];
-  userLocation: {lat: number, lng: number} = {
-    lat: 0,
-    lng: 0,
-  };
+  userLocation: {lat: number, lng: number} | null = null;
+
+  mapCenter: {lat: number; lng: number} = { lat: 31.0461, lng: 34.8516 };
+  mapZoom: number = 7;
+
+  isLoading: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -36,7 +43,7 @@ class AtmStore {
 
   handleAtmDataSuccess(res: IRestApiResonse<IGovernmentData>) {
     this.governmentData = res.data as IGovernmentData; 
-    this.setAtmDataByBankCode();   
+    this.setAtmData();   
   }
 
   handleAtmDataError(error: Error) {
@@ -53,7 +60,7 @@ class AtmStore {
       });
   }
 
-  setAtmDataByBankCode() {
+  setAtmData() {
     this.atmData = this.governmentData.result.records
       .filter((record, index, self) => {
         const isUniqueLocation = index === self.findIndex(r =>
@@ -65,41 +72,59 @@ class AtmStore {
         return isUniqueLocation && isInAllowedBanks && isNotOverseasBank;
       });
   }
-  
+
+  filteredAtmData() {
+    return this.atmData
+      .filter(record => {
+        const isInput = this.selectedInput === '' || record.City.includes(this.selectedInput);
+        const isAtmType = this.selectedAtmType === 'all' || record.ATM_Type === this.selectedAtmType;
+        const isBankCode = this.selectedBankCode === 'all' || record.Bank_Code === this.selectedBankCode;
+        return isInput && isAtmType && isBankCode;
+      });
+  }
 
   createGeoMarkers() {
-    return this.atmData
+    return this.filteredAtmData()
       .filter(record => 
         record.X_Coordinate !== null && record.Y_Coordinate !== null &&
-        !(record.X_Coordinate === 0 && record.Y_Coordinate === 0)
+        record.X_Coordinate !== 0 && record.Y_Coordinate !== 0
       )
       .map(record => ({
         geocode: [record.X_Coordinate, record.Y_Coordinate],
-        popUp: `${record.Bank_Name} - ${record.ATM_Address} - ${record.X_Coordinate} - ${record.Y_Coordinate}`,
+        popUp: `${record.Bank_Name} - ${record.ATM_Address}`,
         type: record.ATM_Type,
         id: record._id,
       }));  
   }
-  
 
-  async getAtmByCity(city: string) {
-    return this.atmApi
-      .getAtmByCity(city)
-      .then((res) => {
-        this.governmentData = res.data!;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  setSelectedAtmType(type: atmType) {
+    this.selectedAtmType = type;
+  }
+
+  setSelectedBankCode(code: bankCode) {
+    this.selectedBankCode = code;
+  }
+
+  setSelectedInput(input: string) {
+    this.selectedInput = input;
   }
 
   setUserLocation(lat: number, lng: number) {
     this.userLocation = { lat, lng };
   }
 
-  isUserLocationEmpty() {
-    return this.userLocation.lat === 0 && this.userLocation.lng === 0;
+  setMapCenter(lat: number, lng: number) {
+    this.mapCenter = { lat, lng };
   }
+
+  setMapZoom(zoom: number) {
+    this.mapZoom = zoom;
+  }
+
+  setIsLoading(value: boolean) {
+    this.isLoading = value;
+  }
+
 }
 
 export default AtmStore;

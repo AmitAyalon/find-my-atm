@@ -1,4 +1,5 @@
-export type atmType = 'withdrawal' | 'information' | 'all';
+export type atmType = 'מכשיר מידע/או מתן הוראות' | 'משיכת מזומן' | 'all';
+export type bankCode = 'all' | number;
 
 export interface IGovernmentData {
   help: string

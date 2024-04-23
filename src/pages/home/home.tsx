@@ -2,9 +2,9 @@ import './home.scss';
 import { observer } from 'mobx-react-lite';
 import rootStore from '../../store/root-store';
 import { useEffect } from 'react';
-import NoLocation from '../../components/no-location/no-location';
 import Map from '../../components/map/map';
 import FilterPanel from '../../components/filter-panel/filter-panel';
+import { GridLoader } from 'react-spinners';
 
 const HomePage = observer(() => {
   const { atmStore } = rootStore;
@@ -17,43 +17,23 @@ const HomePage = observer(() => {
     fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const { latitude, longitude } = pos.coords;
-            atmStore.setUserLocation(latitude, longitude);
-          },
-          (error) => {
-            console.error('Error getting user location:', error);
-          }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser.');
-      }
-    };
-
-    getUserLocation();
-  }, []);
-
   return (
     <div id="home-page">
-      {!atmStore.isUserLocationEmpty() ? (
-        <div className="weather-data-container">
-          <div className="weather-data-forecast">
-            <div className="left-panel">
+      {atmStore.filteredAtmData().length > 0 ? (
+        <div className="map-data-container">
+          <div className="map-data-view">
+            <div className="left-view">
               {atmStore.governmentData && atmStore.governmentData.result ? (
                 <Map />
               ) : null}
             </div>
-            <div className="right-panel">
+            <div className="right-view">
               <FilterPanel />
             </div>
           </div>
         </div>
       ) : (
-        <NoLocation />
+        <GridLoader color="#F6993A" />
       )}
     </div>
   );
