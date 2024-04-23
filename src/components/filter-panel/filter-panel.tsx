@@ -32,11 +32,11 @@ const FilterPanel = observer(() => {
       atmStore.mapCenter.lat === center.lat &&
       atmStore.mapCenter.lng === center.lng
     ) {
-      atmStore.setMapCenter(31.0461, 34.8516);
+      atmStore.setMapCenter(31.0461, 34.8516, 'atmLocation');
       atmStore.setMapZoom(7);
       return;
     }
-    atmStore.setMapCenter(center.lat, center.lng);
+    atmStore.setMapCenter(center.lat, center.lng, 'atmLocation');
     atmStore.setMapZoom(14);
   };
 

@@ -13,8 +13,8 @@ export const BANK_CODE_LIST = [
 
 const OVERSEAS_BANK_LIST = [
   { code: 11, address: 'קיבוץ גלויות 5' },
-  {code: 12, address: 'אפטר 9' },
-  {code: 12, address: 'רחוב ראשי  1692000' },
+  { code: 12, address: 'אפטר 9' },
+  { code: 12, address: 'רחוב ראשי  1692000' },
   { code: 13, address: 'ניסנבאום 33' },
 ];
 
@@ -28,13 +28,13 @@ class AtmStore {
   selectedBankCode: bankCode = 'all';
   selectedInput: string = '';
 
-  geoMarkers: { geocode: [number, number]; popUp: string }[] = [];
   userLocation: {lat: number, lng: number} | null = null;
+  lastCenterSource: 'userLocation' | 'atmLocation' | null = null;
 
   mapCenter: {lat: number; lng: number} = { lat: 31.0461, lng: 34.8516 };
   mapZoom: number = 7;
-
-  isLoading: boolean = false;
+  
+  isLoading: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -44,6 +44,7 @@ class AtmStore {
   handleAtmDataSuccess(res: IRestApiResonse<IGovernmentData>) {
     this.governmentData = res.data as IGovernmentData; 
     this.setAtmData();   
+    this.setIsLoading(false);
   }
 
   handleAtmDataError(error: Error) {
@@ -111,10 +112,12 @@ class AtmStore {
 
   setUserLocation(lat: number, lng: number) {
     this.userLocation = { lat, lng };
+    this.lastCenterSource = 'userLocation';
   }
 
-  setMapCenter(lat: number, lng: number) {
+  setMapCenter(lat: number, lng: number, source: 'userLocation' | 'atmLocation') {
     this.mapCenter = { lat, lng };
+    this.lastCenterSource = source;
   }
 
   setMapZoom(zoom: number) {

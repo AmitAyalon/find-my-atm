@@ -8,7 +8,7 @@ export default function Page404() {
       <p className="not-found-message">
         The page you are looking for does not exist
       </p>
-      <Link to="/" className={'back-to-home'}>
+      <Link to="/" className="back-to-home">
         Back to Home
       </Link>
     </div>

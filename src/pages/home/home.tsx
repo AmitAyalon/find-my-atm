@@ -19,7 +19,7 @@ const HomePage = observer(() => {
 
   return (
     <div id="home-page">
-      {atmStore.filteredAtmData().length > 0 ? (
+      {!atmStore.isLoading ? (
         <div className="map-data-container">
           <div className="map-data-view">
             <div className="left-view">
