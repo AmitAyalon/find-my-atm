@@ -21,51 +21,46 @@ const FilterPanel = observer(() => {
 
   const handleBankChange = (event: SelectChangeEvent) => {
     atmStore.setSelectedBankCode(event.target.value as bankCode);
+    atmStore.setIsFilterChanged(true);
   };
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     atmStore.setSelectedAtmType(event.target.value as atmType);
+    atmStore.setIsFilterChanged(true);
   };
 
-  const handleAtmClick = (center: { lat: number; lng: number }) => {
+  const handleAtmSelection = (center: { lat: number; lng: number }) => {
     if (
       atmStore.mapCenter.lat === center.lat &&
       atmStore.mapCenter.lng === center.lng
     ) {
       atmStore.setMapCenter(31.0461, 34.8516, 'atmLocation');
       atmStore.setMapZoom(7);
+      atmStore.setIsFilterChanged(false);
       return;
     }
     atmStore.setMapCenter(center.lat, center.lng, 'atmLocation');
     atmStore.setMapZoom(14);
+    atmStore.setIsFilterChanged(false);
   };
 
   return (
     <div id="filter-panel">
       <div className="atm-filters">
-        <Paper
-          className="search-bar"
-          elevation={0}
-          sx={{
-            p: '2px 4px',
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
+        <Paper className="search-bar" elevation={0}>
           <InputBase
-            sx={{ mr: 1, flex: 1 }}
+            className="input-base"
             dir="rtl"
             placeholder="חיפוש לפי עיר"
             onChange={handleInputChange}
           />
-          <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-          <IconButton type="button" sx={{ p: '8px' }} aria-label="search">
+          <Divider className="input-divider" orientation="vertical" />
+          <IconButton type="button" aria-label="search">
             <SearchIcon />
           </IconButton>
         </Paper>
         <div className="select-container">
-          <FormControl sx={{ width: '100%' }} size="small" dir="rtl">
+          <FormControl className="form-control" size="small" dir="rtl">
             <InputLabel id="select-type-label">כל סוגי הבנקטים</InputLabel>
             <Select
               labelId="select-type-label"
@@ -83,7 +78,7 @@ const FilterPanel = observer(() => {
               <MenuItem value="משיכת מזומן">משיכת מזומן</MenuItem>
             </Select>
           </FormControl>
-          <FormControl sx={{ width: '100%' }} size="small" dir="rtl">
+          <FormControl className="form-control" size="small" dir="rtl">
             <InputLabel id="select-bank-label">כל הבנקים</InputLabel>
             <Select
               labelId="select-bank-label"
@@ -103,7 +98,7 @@ const FilterPanel = observer(() => {
             </Select>
           </FormControl>
         </div>
-        <Divider sx={{ height: 6, mb: 2 }} orientation="horizontal" />
+        <Divider className="filters-divider" orientation="horizontal" />
       </div>
 
       <div className="atm-list">
@@ -113,7 +108,10 @@ const FilterPanel = observer(() => {
             className="atm-item"
             elevation={0}
             onClick={() =>
-              handleAtmClick({ lat: item.X_Coordinate, lng: item.Y_Coordinate })
+              handleAtmSelection({
+                lat: item.X_Coordinate,
+                lng: item.Y_Coordinate,
+              })
             }
           >
             <div className="item-container">

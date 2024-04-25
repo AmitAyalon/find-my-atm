@@ -1,10 +1,49 @@
-import './home.scss';
+import { styled } from '@mui/material/styles';
 import { observer } from 'mobx-react-lite';
 import rootStore from '../../store/root-store';
 import { useEffect } from 'react';
 import Map from '../../components/map/map';
 import FilterPanel from '../../components/filter-panel/filter-panel';
-import { GridLoader } from 'react-spinners';
+import CircularProgress from '@mui/material/CircularProgress';
+
+const HomePageContainer = styled('div')(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '3rem',
+}));
+
+const MapDataContainer = styled('div')(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '1rem',
+  border: `4px solid #202b3b`,
+  borderRadius: '1rem',
+}));
+
+const MapDataView = styled('div')(() => ({
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+  height: '90vh',
+  width: '90vw',
+}));
+
+const LeftView = styled('div')({
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+const RightView = styled('div')(() => ({
+  height: '100%',
+  backgroundColor: 'white',
+  width: '25vw',
+  padding: '0.75rem',
+  boxShadow: '-30px 0px 20px -60px rgba(255,255,255,0.45)',
+}));
 
 const HomePage = observer(() => {
   const { atmStore } = rootStore;
@@ -18,24 +57,24 @@ const HomePage = observer(() => {
   }, []);
 
   return (
-    <div id="home-page">
+    <HomePageContainer>
       {!atmStore.isLoading ? (
-        <div className="map-data-container">
-          <div className="map-data-view">
-            <div className="left-view">
+        <MapDataContainer>
+          <MapDataView>
+            <LeftView>
               {atmStore.governmentData && atmStore.governmentData.result ? (
                 <Map />
               ) : null}
-            </div>
-            <div className="right-view">
+            </LeftView>
+            <RightView>
               <FilterPanel />
-            </div>
-          </div>
-        </div>
+            </RightView>
+          </MapDataView>
+        </MapDataContainer>
       ) : (
-        <GridLoader color="#F6993A" />
+        <CircularProgress color="primary" />
       )}
-    </div>
+    </HomePageContainer>
   );
 });
 

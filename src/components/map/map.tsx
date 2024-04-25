@@ -18,25 +18,21 @@ const Map = observer(() => {
   const { atmStore } = rootStore;
 
   useEffect(() => {
-    const fetchUserLocation = () => {
-      if (!navigator.geolocation) {
-        console.error('Geolocation is not supported by this browser.');
-        return;
+    if (!navigator.geolocation) {
+      console.error('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        atmStore.setUserLocation(latitude, longitude);
+        atmStore.setMapCenter(latitude, longitude, 'userLocation');
+      },
+      (error) => {
+        console.error('Error getting user location:', error);
       }
-
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          atmStore.setUserLocation(latitude, longitude);
-          atmStore.setMapCenter(latitude, longitude, 'userLocation');
-        },
-        (error) => {
-          console.error('Error getting user location:', error);
-        }
-      );
-    };
-
-    fetchUserLocation();
+    );
   }, []);
 
   const MapEffect = () => {
@@ -47,31 +43,33 @@ const Map = observer(() => {
         return;
       }
 
+      console.log('last center source:', atmStore.lastCenterSource);
       switch (atmStore.lastCenterSource) {
         case 'userLocation':
-          console.log('user location set');
-          map.setView(
-            [
-              atmStore.userLocation?.lat as number,
-              atmStore.userLocation?.lng as number,
-            ],
-            14
-          );
+          !atmStore.isFilterChanged &&
+            map.setView(
+              [
+                atmStore.userLocation?.lat as number,
+                atmStore.userLocation?.lng as number,
+              ],
+              14
+            );
           break;
         case 'atmLocation':
-          console.log('atm location set');
-          map.setView(
-            [atmStore.mapCenter.lat, atmStore.mapCenter.lng],
-            atmStore.mapZoom
-          );
+          !atmStore.isFilterChanged &&
+            map.setView(
+              [atmStore.mapCenter.lat, atmStore.mapCenter.lng],
+              atmStore.mapZoom
+            );
           break;
         default:
-          map.setView(
-            [atmStore.mapCenter.lat, atmStore.mapCenter.lng],
-            atmStore.mapZoom
-          );
+          !atmStore.isFilterChanged &&
+            map.setView(
+              [atmStore.mapCenter.lat, atmStore.mapCenter.lng],
+              atmStore.mapZoom
+            );
       }
-    }, [atmStore.mapCenter, atmStore.lastCenterSource]);
+    }, [atmStore.lastCenterSource]);
 
     return null;
   };
