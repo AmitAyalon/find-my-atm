@@ -43,7 +43,6 @@ const Map = observer(() => {
         return;
       }
 
-      console.log('last center source:', atmStore.lastCenterSource);
       switch (atmStore.lastCenterSource) {
         case 'userLocation':
           !atmStore.isFilterChanged &&
